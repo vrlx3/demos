@@ -8,10 +8,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Data // generates getters/setter, toString, hashCode, and equals() method automatically
 @AllArgsConstructor
 @NoArgsConstructor
+//@JsonIdentityInfo(generator=ObjectGenerators.PropertyGenerator.class, property="id")
 public class User {
 	
 	@Id
@@ -55,6 +57,19 @@ public class User {
 		this.username = username;
 		this.password = password;
 		this.email = email;
+	}
+
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return username;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }
