@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.revature.data.AddressRepository;
 import com.revature.data.UserRepository;
 import com.revature.exception.UserNotFoundException;
 import com.revature.model.User;
@@ -30,14 +31,17 @@ public class UserService {
 	@Autowired
 	UserRepository userRepo;
 	
+	@Autowired
+	AddressRepository addressRepo;
+	
 	// why a Set? no duplicates!
-	@Transactional(readOnly=true)
+//	@Transactional(readOnly=true)
 	public Set<User> findAll() {
 		// return from the UserRepository the findAll() method but Stream it to a set
 		return userRepo.findAll().stream().collect(Collectors.toSet());
 	}
 	
-	@Transactional(readOnly=true)
+//	@Transactional(readOnly=true)
 	public User getByUsername(String username) {
 		
 		// add a logging statement to check that username isn't empty
@@ -48,7 +52,7 @@ public class UserService {
 	}
 	
 	
-	@Transactional(readOnly=true)
+//	@Transactional(readOnly=true)
 	public User getById(int id) {
 		
 		if (id <= 0) {
@@ -60,20 +64,17 @@ public class UserService {
  	
 	// add() - return the User with it's ID
 	// Every time this method is invoked I want to begin a new transaction
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
-	public User add(User u){
-		
-		User returnedUser = userRepo.save(u);	
-		if (returnedUser.getId() > 0) {
-			log.info("Successfully returned User with id {}", returnedUser.getId());
-		} else {
-			log.warn("Could not add user with username {}", u.getUsername());
+	// @Transactional(propagation=Propagation.REQUIRES_NEW)
+	public User add(User u) {
+
+		if (u.getAddresses() != null) {
+			u.getAddresses().forEach(a -> addressRepo.save(a));
 		}
-		
-		return returnedUser;
+
+		return userRepo.save(u);
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRED) // defaults setting of transactions in Spring
+//	@Transactional(propagation=Propagation.REQUIRED) // defaults setting of transactions in Spring
 	public void remove(int id) { // JpaRespoitory is an interfaces that EXTENDS CrudRepository
 		userRepo.deleteById(id);
 	}
